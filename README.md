@@ -13,8 +13,9 @@ A python script to automate the packet capture on IOS-XE, create a pcap file and
 
 ### Steps to Reproduce
 * Download/clone the repository
-* Execute using a text editor such as pycharm
-* Terminal can also be used to run the code.
+* Install the requirements using requirements.txt using ```pip install -r requirements.txt```
+* Execute controller.py using a text editor such as pycharm
+* Terminal can also be used to run the script.
       ```python controller.py```
 
 #### API Reference/Documentation:
