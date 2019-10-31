@@ -1,5 +1,5 @@
 # Packet_Capture_Automation_IOS-XE
-A python script to automate the packet capture on IOS-XE, create a pcap file and copy it to local machine using secure copy.
+A python script to automate the packet capture on IOS-XE, create a pcap file and copy it to local machine using secure copy and also automate the creation of a DNAC template to configure packet capture on a switch and push the pcap file to a remote ftp server for further processing. This script can be used to configure packet capture on multiple switches registered in DNAC.
 
 ### Author:
 
