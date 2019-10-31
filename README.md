@@ -10,7 +10,7 @@ A python script to automate the packet capture on IOS-XE, create a pcap file and
 ### Prerequisites
 * Python 2.7
 * PyCharm/Any text editor
-* Make sure SCP is enabled on the remote device ```ip scp server enable```
+* Make sure SCP is enabled on the remote device ```ip scp server enable``` if ```controller.py``` is used.
 
 ### Steps to Reproduce
 * Download/clone the repository
