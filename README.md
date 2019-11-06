@@ -22,6 +22,12 @@ A python script to automate the packet capture on IOS-XE, create a pcap file and
 * Terminal can also be used to run the script.
       ```python controller/dnac_template.py```
 
+### Screenshots
+
+![alt text](https://github.com/Abhijith-R/Automate-Creation-of-DNAC-template-to-enable-packet-capture-on-IOS-XE/blob/master/Python_Terminal1.png)
+
+![alt text](https://github.com/Abhijith-R/Automate-Creation-of-DNAC-template-to-enable-packet-capture-on-IOS-XE/blob/master/dnac_screenshot.png)
+
 ### API Reference/Documentation:
 * [Embedded Packet Capture for Cisco IOS and IOS-XE](https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-embedded-packet-capture/116045-productconfig-epc-00.html)
 * [Programmability Configuration Guide, Cisco IOS XE](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/prog/configuration/169/b_169_programmability_cg/cli_python_module.html)
