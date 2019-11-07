@@ -17,7 +17,7 @@ A python script to automate the packet capture on IOS-XE, create a pcap file and
 * Install the requirements using requirements.txt using ```pip install -r requirements.txt```
 * There are two python files which can be executed for two different requirements 
 * ```controller.py``` - Python script which connects to the switch with the credentials using ssh, creates a capture and copies  pcap file from the switch to the local machine
-* ```dnac_template.py``` - Python script with the help of DNAC REST API automates the creation of a template to configure packet capture on the switch registered with DNAC and copies the pcap file to a ftp server for further processing.
+* ```dnac_template.py``` - Python script with the help of DNAC REST API automates the creation of a template, commit and deploy the template to configure packet capture on the switch registered with DNAC and copies the pcap file to a ftp server for further processing.
 * Execute controller.py/dnac_template.py using a text editor such as pycharm
 * Terminal can also be used to run the script.
       ```python controller/dnac_template.py```
