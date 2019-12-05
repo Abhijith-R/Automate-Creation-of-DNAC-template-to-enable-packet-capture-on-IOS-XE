@@ -21,11 +21,11 @@ import time
 import requests
 from requests.auth import HTTPBasicAuth
 
-dnac = "dnac ip"
-uname="your usename"
-pwd="your password"
+dnac = "IP"
+uname = "username"
+pwd = "password"
 
-dnac_headers = {'X-Auth-Token':'',
+dnac_headers = {'X-Auth-Token': '',
                 'content-type': 'application/json'}
 dnac_session = requests.Session()
 # Disable Certificate warning
@@ -36,7 +36,8 @@ except:
 
 
 def get_auth_token(controller_ip):
-    # Authenticates with controller and returns a token to be used in subsequent API invocations
+    """ Authenticates with controller and returns a token to be used in subsequent API invocations
+       """
 
     login_url = "https://{0}/api/system/v1/auth/token".format(controller_ip)
     result = requests.post(url=login_url, auth=HTTPBasicAuth(uname, pwd), verify=False)
@@ -47,28 +48,27 @@ def get_auth_token(controller_ip):
 
 
 def create_project():
-    # Creates a new project
     url = "https://{0}/dna/intent/api/v1/template-programmer/project".format(dnac)
     proj_name = raw_input("Enter a Project name")
     payload = {"name": proj_name}
-    r = requests.post(url,verify=False,headers=dnac_headers,data=json.dumps(payload))
+    r = requests.post(url, verify=False, headers=dnac_headers, data=json.dumps(payload))
     return r.text
 
 
 def select_project():
-    # Select an existing project
     url = "https://{0}/dna/intent/api/v1/template-programmer/project".format(dnac)
-    response = requests.get(url, headers=dnac_headers,verify=False)
+
+    response = requests.get(url, headers=dnac_headers, verify=False)
     resp_json = json.loads(response.text)
     out = {}
     for i in resp_json.__iter__():
-        out.update({i.get(u'id'):i.get(u'name')})
+        out.update({i.get(u'id'): i.get(u'name')})
     return out
 
 
-def create_template(tempName,projId):
-    # Create a template
-    url = "https://{0}/dna/intent/api/v1/template-programmer/project/{1}/template".format(dnac,projId)
+def create_template(tempName, projId):
+    url = "https://{0}/dna/intent/api/v1/template-programmer/project/{1}/template".format(dnac, projId)
+
     payload = {
         "composite": False,
         "deviceTypes": [
@@ -118,7 +118,7 @@ def create_template(tempName,projId):
                 "key": None,
                 "provider": None,
                 "binding": ""
-            },{
+            }, {
                 "parameterName": "pcap_file",
                 "dataType": None,
                 "defaultValue": None,
@@ -147,7 +147,7 @@ def create_template(tempName,projId):
 
 
 def commit_template(template_name, project_name):
-    # Commit the created template
+    """DNAC Module to commit the created template"""
     tmp_url = 'https://{0}/dna/intent/api/v1/template-programmer/project'.format(dnac)
 
     r = requests.get(tmp_url,
@@ -162,15 +162,14 @@ def commit_template(template_name, project_name):
                     tmp_url = 'https://{0}/dna/intent/api/v1/template-programmer/template/version'.format(dnac)
                     payload = {"comments": "first commit", "templateId": template['id']}
                     r_com = requests.post(tmp_url,
-                                      verify=False,
-                                      headers=dnac_headers,
-                                      data=json.dumps(payload))
-
+                                          verify=False,
+                                          headers=dnac_headers,
+                                          data=json.dumps(payload))
 
     tmp_id_url = 'https://{0}/dna/intent/api/v1/template-programmer/template'.format(dnac)
     r_id = requests.get(tmp_id_url,
-                     verify=False,
-                     headers=dnac_headers)
+                        verify=False,
+                        headers=dnac_headers)
     resp = r_id.json()
     for i in resp:
         if (i.get("name") == template_name):
@@ -179,44 +178,46 @@ def commit_template(template_name, project_name):
 
 
 def get_devices():
-    # Get Cat9300 devices
+    """DNAC Module Get Devices"""
     devices_dict = {}
     tmp_url = 'https://{0}/dna/intent/api/v1/network-device'.format(dnac)
 
     r = requests.get(tmp_url,
-                         verify=False,
-                         headers=dnac_headers)
+                     verify=False,
+                     headers=dnac_headers)
+    # r.raise_for_status()
+    # print('DNAC Response Body: ' + r.text)
     devices = r.json()['response']
 
     for dev in devices:
-        if(dev.get("type")== "Cisco Catalyst 9300 Switch"):
-            devices_dict.update({dev.get("id"):dev.get("hostname")})
+        if (dev.get("type") == "Cisco Catalyst 9300 Switch"):
+            devices_dict.update({dev.get("id"): dev.get("hostname")})
     return devices_dict
 
 
-def deploy_template(template_v_id, switch_id,cap_name,intf_name,pcap_file_name):
-    # Deploy created template on selected device
+def deploy_template(template_v_id, switch_id, cap_name, intf_name, pcap_file_name):
+    """DNAC Module deploy template"""
     tmp_url = 'https://{0}/dna/intent/api/v1/template-programmer/template/deploy'.format(dnac)
     payload = {"forcePushTemplate": "True",
-                  "targetInfo": [
-                      {
-                          "id": switch_id,
-                          "params": {"capture_name": cap_name, "interface_name": intf_name, "pcap_file":pcap_file_name  },
-                          "type": "MANAGED_DEVICE_UUID"
-                      }
-                  ],
-                  "templateId": template_v_id
-              }
+               "targetInfo": [
+                   {
+                       "id": switch_id,
+                       "params": {"capture_name": cap_name, "interface_name": intf_name, "pcap_file": pcap_file_name},
+                       "type": "MANAGED_DEVICE_UUID"
+                   }
+               ],
+               "templateId": template_v_id
+               }
     r = requests.post(tmp_url,
-                         verify=False,
-                         headers=dnac_headers,
-                         data=json.dumps(payload))
+                      verify=False,
+                      headers=dnac_headers,
+                      data=json.dumps(payload))
     return r.json()
 
 
 def get_deployment_status(dep_id):
-    # Get Deployment Status
-    tmp_url = 'https://{0}/dna/intent/api/v1/template-programmer/template/deploy/status/{1}'.format(dnac,dep_id)
+    """DNAC Module Get Deployment Status"""
+    tmp_url = 'https://{0}/dna/intent/api/v1/template-programmer/template/deploy/status/{1}'.format(dnac, dep_id)
 
     r = requests.get(tmp_url,
                      verify=False,
@@ -228,63 +229,31 @@ if __name__ == "__main__":
     get_auth_token(dnac)
     out = select_project()
     projectId_dict = {}
-    print("************************************************************")
-    print("Select/Create a project to assign before creating a template")
-    print("************************************************************")
-    out_len = out.__len__()
-    print("______________________")
-    print("Sl No.  Project Name")
-    print("______________________")
-    for z in range(out_len):
-        print("{0}:   {1}".format(z, out.values()[z]))
-        projectId_dict.update({z:out.keys()[z]})
-    print("{0}:   {1}".format(out_len, "Create a new project\n"))
-    print("----------------------")
-    opt = raw_input("Select a Sl No. - ")
-    if(opt == str(out_len)):
-        create_project()
-        print("\n************************************************************")
-        print("Project Created!!! Restarting Program.......")
-        print("************************************************************\n")
-        time.sleep(2)
-        os.execl(sys.executable, sys.executable, *sys.argv)
-    else:
-        projId = projectId_dict.get(int(opt))
-        projName = out.get(projId)
-        print("\n************************************************************")
-        print("Creating a template for project - "+projName)
-        print("************************************************************\n")
-        template_name = raw_input("Enter Template Name: ")
-        print("____________________________________________________________\n")
-        create_template(template_name, projId)
-        print("Template "+template_name+" created\n")
-        print("Commiting " +template_name+" started...........")
-        print("____________________________________________________________\n")
-        tem_id = commit_template(template_name,projName)
-        #tem_id = commit_template("testmod3", "testProj")
-        print("\nList of Cisco Catalyst 9300 Switch to deploy the template\n")
-        dev_list = get_devices()
-        for i in dev_list.values():
-            print(i)
-        print("____________________________________________________________\n")
-        dev_name = raw_input("\nEnter the device name\n")
-        for i, j in dev_list.items():
-            if (dev_name == j):
-                dev_id = i
-        #print(dev_id)
-        cap_name = raw_input("\nEnter Capture name: ")
-        intf_name = raw_input("\nEnter Interface: ")
-        pcap_file_name = raw_input("\nEnter Capture File name: ")
-        print("\nDeploying template " +template_name+" to device "+dev_name)
-        dep_response = deploy_template(tem_id,dev_id,cap_name,intf_name,pcap_file_name)
-        deploy_id_raw = dep_response.get("deploymentId")
-        dep_split = deploy_id_raw.split(":")
-        deployment_id = dep_split[-1]
-        time.sleep(15)
-        deployment_statistics = get_deployment_status(deployment_id.lstrip(" "))
-        deployment_devices = deployment_statistics.get("devices")
-        for i in deployment_devices.__iter__():
-            status_message = i.get("detailedStatusMessage")
-        print("\n****************************************************************")
-        print(deployment_statistics)
-        print("******************************************************************")
+    projName = "Capture1"
+    template_name = "Capture1"
+    print("***********************************************************")
+    print("Commiting template " + template_name + " started...........")
+    print("***********************************************************\n")
+    tem_id = commit_template(template_name, projName)
+    dev_list = get_devices()
+    dev_name = "seed.budsuperlab.net"
+    for i, j in dev_list.items():
+        if (dev_name == j):
+            dev_id = i
+    # print(dev_id)
+    cap_name = "Capture1"
+    intf_name = "GigabitEthernet1/0/2"
+    pcap_file_name = raw_input("\nEnter Capture File name: ")
+    print("\nDeploying template " + template_name + " to device " + dev_name)
+    dep_response = deploy_template(tem_id, dev_id, cap_name, intf_name, pcap_file_name)
+    deploy_id_raw = dep_response.get("deploymentId")
+    dep_split = deploy_id_raw.split(":")
+    deployment_id = dep_split[-1]
+    time.sleep(15)
+    deployment_statistics = get_deployment_status(deployment_id.lstrip(" "))
+    deployment_devices = deployment_statistics.get("devices")
+    for i in deployment_devices.__iter__():
+        status_message = i.get("detailedStatusMessage")
+    print("\n****************************************************************")
+    print(deployment_statistics)
+    print("******************************************************************")
